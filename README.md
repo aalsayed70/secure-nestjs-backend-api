@@ -153,66 +153,6 @@ npm run test:watch
 - **url_md5**: MD5 hash of URL (generated)
 - **username_md5**: MD5 hash of username (generated)
 
-## 🔧 Configuration
-
-### Environment Variables
-The application uses environment variables for configuration. Copy `env.example` to `.env` and update with your values:
-
-```env
-# Database Configuration
-DB_HOST=localhost
-DB_PORT=3306
-DB_USERNAME=your_username
-DB_PASSWORD=your_password
-DB_DATABASE=your_database_name
-
-# Application Configuration
-PORT=3000
-NODE_ENV=development
-```
-
-**⚠️ Security Note**: Never commit your `.env` file to version control. The `env.example` file is provided as a template.
-
-### Security Features
-- **Environment Variables**: All sensitive data is stored in environment variables
-- **No Hardcoded Credentials**: Database credentials are loaded from environment
-- **Input Validation**: Comprehensive validation using class-validator DTOs
-- **SQL Injection Protection**: Parameterized queries and input sanitization
-- **CORS Configuration**: Configured for localhost development only
-- **Production Safety**: Database synchronization is disabled in production mode
-
-### CORS Configuration
-The application is configured to allow CORS requests from localhost ports for development.
-
-## 📝 Code Quality
-
-### Linting
-```bash
-npm run lint
-```
-
-### Formatting
-```bash
-npm run format
-```
-
-## 🚀 Deployment
-
-### Production Build
-```bash
-npm run build
-```
-
-### Docker (Optional)
-```dockerfile
-FROM node:18-alpine
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci --only=production
-COPY dist ./dist
-EXPOSE 3000
-CMD ["node", "dist/main"]
-```
 
 ## 🤝 Contributing
 
@@ -222,23 +162,6 @@ CMD ["node", "dist/main"]
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-## 📄 License
 
-This project is licensed under the UNLICENSED License.
-
-## 🆘 Support
-
-For support and questions, please open an issue in the repository.
-
-## 🔄 Version History
-
-- **v0.0.1** - Initial release with basic CRUD operations
-  - Dashboard analytics
-  - Account management
-  - Corporate data handling
-  - Combo list management
-  - MySQL integration with TypeORM
-
----
 
 **Note**: This is a development version. Ensure proper security measures and environment configuration before production deployment.
