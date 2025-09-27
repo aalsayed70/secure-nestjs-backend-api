@@ -162,6 +162,3 @@ npm run test:watch
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-
-
-**Note**: This is a development version. Ensure proper security measures and environment configuration before production deployment.
