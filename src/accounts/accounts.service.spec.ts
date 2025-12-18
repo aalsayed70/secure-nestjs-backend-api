@@ -13,6 +13,7 @@ describe('AccountsService', () => {
   const mockCredentialsRepository = {
     createQueryBuilder: jest.fn(() => ({
       orderBy: jest.fn().mockReturnThis(),
+      offset: jest.fn().mockReturnThis(),
       limit: jest.fn().mockReturnThis(),
       getMany: jest.fn(),
     })),
@@ -22,6 +23,7 @@ describe('AccountsService', () => {
   const mockCompolistRepository = {
     createQueryBuilder: jest.fn(() => ({
       orderBy: jest.fn().mockReturnThis(),
+      offset: jest.fn().mockReturnThis(),
       limit: jest.fn().mockReturnThis(),
       getMany: jest.fn(),
     })),
@@ -68,12 +70,14 @@ describe('AccountsService', () => {
 
       const credentialsQueryBuilder = {
         orderBy: jest.fn().mockReturnThis(),
+        offset: jest.fn().mockReturnThis(),
         limit: jest.fn().mockReturnThis(),
         getMany: jest.fn().mockResolvedValue(mockCredentials),
       };
 
       const compolistQueryBuilder = {
         orderBy: jest.fn().mockReturnThis(),
+        offset: jest.fn().mockReturnThis(),
         limit: jest.fn().mockReturnThis(),
         getMany: jest.fn().mockResolvedValue(mockCompolist),
       };
@@ -86,7 +90,8 @@ describe('AccountsService', () => {
       expect(result).toHaveLength(3);
       expect(result[0]).toEqual({ Username: 'user1', URL: 'url1', Password: 'pass1' });
       expect(credentialsQueryBuilder.orderBy).toHaveBeenCalledWith('RAND()');
-      expect(credentialsQueryBuilder.limit).toHaveBeenCalledWith(10);
+      expect(credentialsQueryBuilder.limit).toHaveBeenCalledWith(20);
+      expect(credentialsQueryBuilder.offset).toHaveBeenCalledWith(0);
     });
 
     it('should return filtered results when username is provided', async () => {
@@ -105,11 +110,15 @@ describe('AccountsService', () => {
       expect(result).toHaveLength(2);
       expect(mockCredentialsRepository.find).toHaveBeenCalledWith({
         where: { Username: expect.any(Object) },
-        take: 10,
+        skip: 0,
+        take: 20,
+        order: { Username: 'ASC' },
       });
       expect(mockCompolistRepository.find).toHaveBeenCalledWith({
         where: { Username: expect.any(Object) },
-        take: 10,
+        skip: 0,
+        take: 20,
+        order: { Username: 'ASC' },
       });
     });
 
@@ -127,6 +136,29 @@ describe('AccountsService', () => {
       const result = await service.searchByUsername('user');
 
       expect(result).toHaveLength(20);
+    });
+
+    it('should apply pagination offsets', async () => {
+      const mockCredentials: any[] = [];
+      const mockCompolist: any[] = [];
+
+      mockCredentialsRepository.find.mockResolvedValue(mockCredentials);
+      mockCompolistRepository.find.mockResolvedValue(mockCompolist);
+
+      await service.searchByUsername('user', 2, 50);
+
+      expect(mockCredentialsRepository.find).toHaveBeenCalledWith({
+        where: { Username: expect.any(Object) },
+        skip: 50,
+        take: 50,
+        order: { Username: 'ASC' },
+      });
+      expect(mockCompolistRepository.find).toHaveBeenCalledWith({
+        where: { Username: expect.any(Object) },
+        skip: 50,
+        take: 50,
+        order: { Username: 'ASC' },
+      });
     });
   });
 });

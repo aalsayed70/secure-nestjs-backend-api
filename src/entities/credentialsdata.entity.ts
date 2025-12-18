@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from "typeorm";
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn, Index } from "typeorm";
 import { SystemData } from "./systemdata.entity";
 
 @Entity()
@@ -12,6 +12,7 @@ export class CredentialsData {
   @Column({ type: "text" }) // Matches TEXT in MySQL
   URL: string;
 
+  @Index('idx_credentials_username')
   @Column({ type: "text" }) // Matches TEXT in MySQL
   Username: string;
 

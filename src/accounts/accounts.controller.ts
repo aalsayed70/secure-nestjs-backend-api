@@ -1,6 +1,6 @@
 import { Controller, Get, Query, ValidationPipe, UsePipes } from '@nestjs/common';
 import { AccountsService } from './accounts.service';
-import { SearchDto } from '../common/dto/search.dto';
+import { PaginatedSearchDto } from '../common/dto/search.dto';
 
 @Controller('accounts')
 export class AccountsController {
@@ -8,8 +8,11 @@ export class AccountsController {
 
   @Get()
   @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
-  async getSimilarAccounts(@Query() searchDto: SearchDto) {
-    return await this.accountsService.searchByUsername(searchDto.username || '');
+  async getSimilarAccounts(@Query() searchDto: PaginatedSearchDto) {
+    return await this.accountsService.searchByUsername(
+      searchDto.username || '',
+      searchDto.page || 1,
+      searchDto.limit || 20,
+    );
   }
 }
-

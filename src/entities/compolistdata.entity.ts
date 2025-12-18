@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, Unique } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, Unique, Index } from 'typeorm';
 
 @Entity()
 @Unique(['url_md5', 'username_md5'])  // Matches MySQL UNIQUE constraint
@@ -9,6 +9,7 @@ export class CompolistData {
   @Column({ type: 'text', nullable: false })  // Matches TEXT NOT NULL
   URL: string;
 
+  @Index('idx_combolist_username')
   @Column({ type: 'text', nullable: false })  // Matches TEXT NOT NULL
   Username: string;
 

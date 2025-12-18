@@ -14,35 +14,43 @@ export class AccountsService {
     private compolistRepository: Repository<CompolistData>,
   ) {}
 
-  async searchByUsername(username: string): Promise<any[]> {
-    let credentialsResults;
-    let compolistResults;
+  async searchByUsername(username: string, page = 1, limit = 20): Promise<any[]> {
+    const normalizedLimit = Math.min(Math.max(limit, 1), 100);
+    const offset = (Math.max(page, 1) - 1) * normalizedLimit;
 
-    if (!username.trim()) {
-      credentialsResults = await this.credentialsRepository
-        .createQueryBuilder()
-        .orderBy('RAND()')
-        .limit(10)
-        .getMany();
+    const fetchRandom = !username.trim();
 
-      compolistResults = await this.compolistRepository
-        .createQueryBuilder()
-        .orderBy('RAND()')
-        .limit(10)
-        .getMany();
-    } else {
-      credentialsResults = await this.credentialsRepository.find({
-        where: { Username: Like(`%${username}%`) },
-        take: 10,
-      });
+    const credentialsQuery = fetchRandom
+      ? this.credentialsRepository
+          .createQueryBuilder()
+          .orderBy('RAND()')
+          .offset(offset)
+          .limit(normalizedLimit)
+          .getMany()
+      : this.credentialsRepository.find({
+          where: { Username: Like(`%${username}%`) },
+          skip: offset,
+          take: normalizedLimit,
+          order: { Username: 'ASC' },
+        });
 
-      compolistResults = await this.compolistRepository.find({
-        where: { Username: Like(`%${username}%`) },
-        take: 10,
-      });
-    }
+    const compolistQuery = fetchRandom
+      ? this.compolistRepository
+          .createQueryBuilder()
+          .orderBy('RAND()')
+          .offset(offset)
+          .limit(normalizedLimit)
+          .getMany()
+      : this.compolistRepository.find({
+          where: { Username: Like(`%${username}%`) },
+          skip: offset,
+          take: normalizedLimit,
+          order: { Username: 'ASC' },
+        });
 
-    const combinedResults = [...credentialsResults, ...compolistResults].slice(0, 20);
+    const [credentialsResults, compolistResults] = await Promise.all([credentialsQuery, compolistQuery]);
+
+    const combinedResults = [...credentialsResults, ...compolistResults].slice(0, normalizedLimit);
     return combinedResults.map((entry) => ({
       Username: entry.Username,
       URL: entry.URL,
@@ -50,4 +58,3 @@ export class AccountsService {
     }));
   }
 }
-
